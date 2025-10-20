@@ -1,0 +1,47 @@
+// У пакеті: com.yourdomain.library_core
+
+class User {
+    // ... приватні поля ...
+    
+    // Package-private метод: доступний лише в межах library_core
+    void recordLoan(Book book) { 
+        this.loanedBooks.add(book);
+        book.borrow();
+    }
+    // ... інші методи ...
+}
+
+class Library {
+    // ...
+    public boolean performLoan(User user, Book book) {
+        if (book.isBorrowed) {
+            System.out.println("Книга вже видана.");
+            return false;
+        }
+        if (user.canBorrow()) {
+            user.recordLoan(book); // Успішний виклик package-private методу
+            return true;
+        }
+        return false;
+    }
+    // ...
+}
+
+// У пакеті: com.yourdomain.app_demo
+
+public class MainApp {
+    public static void main(String[] args) {
+        Library library = new Library();
+        User user = new User("John Doe", 101);
+        Book book = new Book("Effective Java", "J. Bloch");
+        
+        library.registerUser(user);
+        library.addBook(book);
+
+        // Викликаємо публічний метод library
+        library.performLoan(user, book); 
+
+        // !!! Спроба прямого виклику package-private методу тут призведе до помилки компіляції:
+        // user.recordLoan(new Book("Test", "Author")); // Помилка, метод недоступний
+    }
+}
